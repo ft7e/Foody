@@ -4,14 +4,14 @@ import cartContext from './cart-context';
 function CartProvider(props) {
   const addItemToCart = (item) => {};
   const removeItemFromCart = (id) => {};
-  const cartContext = {
+  const cartContextValues = {
     items: [],
     totalAmount: 0,
     addItem: addItemToCart,
     removeItem: removeItemFromCart,
   };
   return (
-    <cartContext.Provider value={cartContext}>
+    <cartContext.Provider value={cartContextValues}>
       {props.children}
     </cartContext.Provider>
   );
