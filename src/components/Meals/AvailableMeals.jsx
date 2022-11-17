@@ -8,26 +8,32 @@ const mealsData = axios.create({
   baseURL:
     'https://trial-37b18-default-rtdb.europe-west1.firebasedatabase.app/',
 });
-const mealsFromDb = async () => {
-  try {
-    const response = await mealsData.get('/meals.json');
-    const dataObj = response.data;
-    const readyData = [];
-    for (const key in dataObj) {
-      readyData.push({
-        id: key,
-        name: dataObj[key].name,
-        price: dataObj[key].price,
-        description: dataObj[key].description,
-      });
-    }
-    return readyData;
-  } catch {
-    console.log('Error fetching Data');
-  }
-};
+
 const AvailableMeals = () => {
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [meals, setMeals] = useState([]);
+  const mealsFromDb = async () => {
+    try {
+      setError(false);
+      const response = await mealsData.get('/meals.json');
+      const dataObj = response.data;
+      const readyData = [];
+      for (const key in dataObj) {
+        readyData.push({
+          id: key,
+          name: dataObj[key].name,
+          price: dataObj[key].price,
+          description: dataObj[key].description,
+        });
+      }
+      setIsLoading(false);
+      return readyData;
+    } catch {
+      setError(true);
+      console.log('Error fetching Data');
+    }
+  };
   useEffect(() => {
     (async () => {
       const mealsArr = await mealsFromDb();
@@ -35,7 +41,7 @@ const AvailableMeals = () => {
     })();
   }, []);
 
-  const mealsList = meals.map((meal) => (
+  let mealsList = meals.map((meal) => (
     <MealItem
       key={meal.id}
       id={meal.id}
@@ -44,6 +50,12 @@ const AvailableMeals = () => {
       price={meal.price}
     />
   ));
+  if (isLoading) {
+    mealsList = 'Loading...';
+  }
+  if (error) {
+    mealsList = 'Error Fetching Data';
+  }
 
   return (
     <section className={classes.meals}>
