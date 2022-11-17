@@ -1,36 +1,41 @@
 import Card from '../UI/Card';
+import { useEffect, useState } from 'react';
 import MealItem from './MealItem/MealItem';
 import classes from './AvailableMeals.module.css';
+import axios from 'axios';
 
-const DUMMY_MEALS = [
-  {
-    id: 'm1',
-    name: 'Sushi',
-    description: 'Finest fish and veggies',
-    price: 22.99,
-  },
-  {
-    id: 'm2',
-    name: 'Schnitzel',
-    description: 'A german specialty!',
-    price: 16.5,
-  },
-  {
-    id: 'm3',
-    name: 'Barbecue Burger',
-    description: 'American, raw, meaty',
-    price: 12.99,
-  },
-  {
-    id: 'm4',
-    name: 'Green Bowl',
-    description: 'Healthy...and green...',
-    price: 18.99,
-  },
-];
-
+const mealsData = axios.create({
+  baseURL:
+    'https://trial-37b18-default-rtdb.europe-west1.firebasedatabase.app/',
+});
+const mealsFromDb = async () => {
+  try {
+    const response = await mealsData.get('/meals.json');
+    const dataObj = response.data;
+    const readyData = [];
+    for (const key in dataObj) {
+      readyData.push({
+        id: key,
+        name: dataObj[key].name,
+        price: dataObj[key].price,
+        description: dataObj[key].description,
+      });
+    }
+    return readyData;
+  } catch {
+    console.log('Error fetching Data');
+  }
+};
 const AvailableMeals = () => {
-  const mealsList = DUMMY_MEALS.map((meal) => (
+  const [meals, setMeals] = useState([]);
+  useEffect(() => {
+    (async () => {
+      const mealsArr = await mealsFromDb();
+      setMeals([...mealsArr]);
+    })();
+  }, []);
+
+  const mealsList = meals.map((meal) => (
     <MealItem
       key={meal.id}
       id={meal.id}

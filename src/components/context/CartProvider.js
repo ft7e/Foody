@@ -9,7 +9,7 @@ export const ACTIONS = {
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD':
-      const updatedAmount =
+      let updatedAmount =
         state.totalAmount +
         action.payload.item.amount * action.payload.item.price;
       const foundItemIndex = state.items.findIndex(
@@ -33,7 +33,7 @@ const cartReducer = (state, action) => {
       };
 
     case 'REMOVE':
-      const newTotalAmount =
+      let newTotalAmount =
         state.totalAmount -
         action.payload.item.price * action.payload.item.amount;
 
@@ -56,7 +56,7 @@ const cartReducer = (state, action) => {
         newItems[indexOfItem] = newItem;
       }
       return {
-        totalAmount: newTotalAmount.toFixed(2),
+        totalAmount: newTotalAmount,
         items: newItems,
       };
     default:
